@@ -51,7 +51,7 @@ formula-spam-is-disabled:
 For a lot of software in mainstream linux distributions the formula would look like
 
 ```
-{%- set default_sources = {'module' : 'spam', 'defaults' : True, 'pillar' : True, 'grains' : ['os_family', 'os', 'osfinger']} %}
+{%- set default_sources = {'module' : 'spam', 'defaults' : True, 'pillar' : True, 'grains' : []} %}
 {% from "extra_formulas_common/load_config.jinja" import config as spam with context -%}
 
 {% if spam.use is defined -%}
@@ -110,6 +110,18 @@ formula-spam-is-disabled:
 {%- endif %}
 ```
 
-Remember to replace `spam` with the actual name of your software. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc.
+Remember to replace `spam` with the actual name of your software. Populate your `defaults/defaults.yaml` file with values for `package_name`, `config_file_path`, and `service_name`. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc. Based on the content of the config file, you might want to keep adding some sane default values to `defaults/defaults.yaml` (anything host specific would have to be pulled from the pillar).
 
-You'd then have to populate your `defaults` files with values for `package_name`, `config_file_path`, and `service_name`depending on variations across distributions. A simple solution is to start by putting your distro's values into `defaults.yaml`. Then try the formula in a different linux family and move whatever values vary into the `os_family.yaml` file. You should also look for variations in the same family and move those into the `os.yaml` file. The `osfinger.yaml` file is usually leveraged in special cases, when certain versions of a distro break the way things were done in the family or os before it.
+### Supporting more
+
+Odds are that these values won't work for all distros out there, and some grains would have to be leveraged.
+
+To make a really solid formula, your point of departure shouldn't be your distro's values but the upstream/developer defaults. Namely, you'd look for the developer's opinion to set the values in the defaults.yam` file. You could also add some "custom" defaults in here, like the `package_name` or `service_name` values. The upstream developer shouldn't have those around, since the first value is about the os packaging system and the second is about the os init system, not directly related to the software in question, BUT it's safe to assume that those values will match the name that the developer set for the software (and then just cover the divergences). For example, the Bind DNS server has different names in different distros over time, some call it `bind`, some `named`, some others use even different names. You could start by calling it `bind` and then just specify "the other names" where applicable.
+
+Then you'd try your root distro's opinions on the values and set them on the `os_family.yaml` file. Meaning that you'd look for `RedHat`'s values instead of using the ones from `Rocky Linux`, `Debian`'s instead of the ones from `Ubuntu`, etc.
+
+At that point you could then see which values in your os diverge from the family and set those in the `os.yaml` file.
+
+A practical way to get this rolling is to move your `defaults.yaml` values from the previous section into the `osfinger.yaml` file (assume they're all specific to your current distro version). Then start looking for the values from the different sources and whenever something matches (it will already apply to your distro version), remove it from your `osfinger.yaml` file. Hopefully, everything will eventually be covered by more general files.
+
+Some distros introduce breaking changes over time. The best way to tackle those is to assume the "new" stuff as the "default" stuff since it's safe to assume that future versions will keep this "new" way, and that's why it should go into the `os.yaml` file. This will of course break all the "old" versions, which would have to be covered with the `osfinger.yaml` file.
