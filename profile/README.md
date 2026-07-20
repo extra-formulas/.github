@@ -80,9 +80,22 @@ spam_service_running:
 
 {%- else -%}
 
+spam_service_stopped:
+  service.dead:
+    - name: {{ spam.service_name }}
+    - enable: False
+
+spam_config_file_removal:
+  file.absent:
+    - name: {{ spam.config_file_path }}
+    - require:
+      - service: {{ spam.service_name }}
+
 spam_package_removal:
   pkg.removed:
     - name: {{ spam.package_name }}
+    - require:
+      - file: {{ spam.config_file_path }}
 
 {%- endif %}
 
