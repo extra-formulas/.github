@@ -110,7 +110,7 @@ formula-spam-is-disabled:
 {%- endif %}
 ```
 
-Remember to replace `spam` with the actual name of your software. Populate your `defaults/osfinger.yaml` file with values for `package_name`, `config_file_path`, and `service_name`. Keep in mind that the root of the file is a dict/mapping with the osfinger values as keys. To get your key, use SaltStack's `grains.get osfinger` on your host. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc. Based on the content of the config file, you might want to keep adding some sane default values to `defaults/osfinger.yaml` (anything host specific would have to be pulled from the pillar).
+Remember to replace `spam` with the actual name of your software. Populate your `defaults/osfinger.yaml` file with values for `package_name`, `config_file_path`, and `service_name`. Keep in mind that the root of the file is a dict/mapping with the `osfinger` values as keys. To get your key, use SaltStack's `grains.get osfinger` on your host. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc. Based on the content of the config file, you might want to keep adding some sane default values to `defaults/osfinger.yaml` (anything host specific would have to be pulled from the pillar).
 
 ### Supporting more
 
@@ -122,7 +122,7 @@ At that point you could then see which values in your OS diverge from the family
 
 Some distros introduce breaking changes over time. The best way to tackle those is to assume the "new" stuff as the "default" stuff since it's safe to assume that future versions will keep this "new" way, and that's why it should go into the `os.yaml` file. This will of course break all the "old" versions, which would have to be covered in the `osfinger.yaml` file.
 
-At this point you could remove any redundant values from your original entry in the `osfinger.yaml` file. Hopefully, it everything will be covered by more general files and the whole entry could be deleted.
+At this point you could remove any redundant values from your original entry in the `osfinger.yaml` file. With any luck, everything will be covered by more general files and the whole entry could be deleted.
 
 Remember to update your `default_sources` variable at every step of the way for the changes to apply.
 
@@ -130,4 +130,4 @@ Remember to update your `default_sources` variable at every step of the way for 
 
 Upstream SaltStack encourages the build and installation of software directly from source tarballs. It's a REALLY BAD IDEA to do so, you're basically bleeding the package management functionality into SaltStack. Package management is a big and complicated problem on its own, and each distro tackles it in their own way, by "simplifying" it with salt you're not doing anyone any favors. You could say that what separates a distro from the next is the way each tackles package management.
 
-We'd say that "the sane approach" to achieving the same result is by running a private repo compatible with your OS. You'd publish native packages of pre-built pieces of software there taking into consideration all the potential issues: distinguish different distro versions, take into account name collisions, keep track of package versions, etc. By doing this you can leverage your OS' packaging system including the install and removal functionalities that you'd then leverage in your formula. Even if you feel the temptation because your software is self-contained (it lives completely inside a directory in `/opt/`) you'd still find a lot of issues with "installed version detection" which is a crucial functionality to handle upgrades. It's always better to just use the native packaging and the functionalities there.
+We'd say that "the sane approach" to achieving the same result is by running a private repo compatible with your OS. You'd publish native packages of pre-built pieces of software there, taking into consideration all the potential issues: distinguish different distro versions, take into account name collisions, keep track of package versions, etc. By doing this you can leverage your OS' packaging system including the install and removal functionalities that you'd then leverage in your formula. Even if you feel the temptation because your software is self-contained (it lives completely inside a directory in `/opt/`) you'd still find a lot of issues with "installed version detection" which is a critical functionality to handle upgrades. It's always better to just use the native packaging and the functionalities there.
