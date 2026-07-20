@@ -7,7 +7,7 @@ This is a collection of formulas for systems which are not covered by the offici
 
 The way these formulas work is slightly different than upstream SaltStack:
 1. By adding a formula to the `fileroots` in your master, you're claiming that a formula exists (akin to a registry).
-2. Setting a state to certain hosts, via state `top.sls` file, would be the equivalent of "installing" the formula's "code" to those hosts (the states are now available to the hosts).
+2. Setting a state to certain hosts, via state `top.sls` file, would be the equivalent of "installing" the formula's "code" to those hosts (the states would be then available to the hosts).
 3. By leveraging the `use` pillar flag you can then enable/disable the formula and install or uninstall the software/service itself.
 
 ## The `use` flag
