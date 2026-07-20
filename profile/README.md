@@ -65,7 +65,7 @@ spam_config_file:
     - name: {{ spam.config_file_path }}
     - source: salt://{{ slspath }}/files/config.jinja
     - template: jinja
-    - context: {{ spam }}
+    - context: {{ spam | json }}
     - require:
       - pkg: {{ spam.package_name }}
 
