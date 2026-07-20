@@ -3,7 +3,7 @@ This is a collection of formulas for systems which are not covered by the offici
 - Avoid breaking up states into sub-functions, like `foo.install`, `foo.config`, `foo.service`. The formulas here are about setting up (or tearing down) services; if you just want to install a package (the `foo.install` case) there's already [a formula for that](https://github.com/saltstack-formulas/packages-formula). The `foo.config` and `foo.service` states are closely tied, there's really little use cases to have one without the other.
 - Sub-modules are still a thing. Say your `foo` app has a `bar` sub component, then `foo.bar` would be the state to use. This is useful for big pieces of software which have different components. You could have a sub-state for each component instead of having different formulas (this assumes components are independent enough, to the point that they can be installed isolated from each other).
 - There's a unified method to load the values from the defaults and the pillar, which are flattened/merged into a single object. It's done using the `load_config.jinja` script, instead of dedicated `map.jinja` ones, which is maintained and documented [here](extra-formulas-common/)
-- Some shared content is hosted in the [extra-formulas-common](extra-formulas-common/) repo, which should be added to your SaltStack `fileroots` along the actual formula.
+- Some shared content is hosted in the [extra-formulas-common](/extra-formulas/extra-formulas-common/) repo, which should be added to your SaltStack `fileroots` along the actual formula.
 
 The way these formulas work is slightly different than upstream SaltStack:
 1. By adding a formula to the `fileroots` in your master, you're claiming that a formula exists (akin to a registry).
