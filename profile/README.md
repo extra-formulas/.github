@@ -97,6 +97,6 @@ formula-spam-is-disabled:
 {%- endif %}
 ```
 
-The content of the `files/config.jinja` will depend on the software itself, the format expected, etc.
+Remember to replace `spam` with the actual name of your software. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc.
 
 You'd then have to populate your `defaults` files with values for `package_name`, `config_file_path`, and `service_name`depending on variations across distributions. A simple solution is to start by putting your distro's values into `defaults.yaml`. Then try the formula in a different linux family and move whatever values vary into the `os_family.yaml` file. You should also look for variations in the same family and move those into the `os.yaml` file. The `osfinger.yaml` file is usually leveraged in special cases, when certain versions of a distro break the way things were done in the family or os before it.
