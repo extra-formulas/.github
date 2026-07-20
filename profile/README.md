@@ -4,45 +4,41 @@ This is a collection of formulas for systems which are not covered by the offici
 - Sub-modules are still a thing. Say your `foo` app has a `bar` sub component, then `foo.bar` would be the state to use.
 - There's a unified method to load the values from the defaults and the pillar, which are flattened/merged into a single object. It's done using the `load_config.jinja` script, instead of dedicated `map.jinja` ones, which is maintained and documented [here](extra-formulas-common/)
 - Some shared content is hosted in the [extra-formulas-common](extra-formulas-common/) repo, which should be added to your SaltStack `fileroot` along the actual formula.
+The approach here is slightly different than upstream SaltStack:
+1. by adding a formula to the `fileroots` in your master you're claiming that a formula exists (akin of a registry)
+2. applying a state to certain hosts, via state `top.sls` file, would be the equivalent of "installing" the formula's "code" to those hosts
+3. by leveraging the `use` pillar flag you can enable/disable the formula and install or uninstall the software itself.
 
-## Dummy example
+## The `use` flag
 
-Directory structure:
-- spam
-  - defaults
-    - defaults.yaml
-    - os.yaml
-    - os_family.yaml
-    - osfinger.yaml
-  - init.sls
+With the `use` pillar flag you can disable the formula altogether. Just remove the entry from your pillar (which is the default on an empty pillar) and the formula won't do anything at all. It would be the same effect as removing the entry from state's `top.sls` file in upstream SaltStack formulas.
 
-The "init.sls" file should start with something like this:
-"""
-{%- set default_sources = {'module' : 'spam', 'defaults' : True, 'pillar' : True, 'grains' : ['os_family', 'os', 'osfinger']} %}
-{%- from "extra_formulas_common/load_config.jinja" import config as spam with context %}
+By setting the value to `true` you will trigger the `install` effect, the good 'ol regular formula application. By setting it to `false` you'd trigger the `uninstall` effect (which a lot of formulas lack, btw).
 
-{%- if spam.use is defined %}
+To achieve this, your custom formula should have a basic structure like:
+
+```
+{# remember to set your "default_sources" value #}
 ...
-"""
+{% from "extra_formulas_common/load_config.jinja" import config as spam with context -%}
 
-## Submodule example
+{% if spam.use is defined -%}
 
-Directory structure:
-- foo
-  - bar
-    - init.sls
-  - defaults
-    - defaults.yaml
-    - os.yaml
-    - os_family.yaml
-    - osfinger.yaml
-  - init.sls
+{% if spam.use | to_bool -%}
 
-The "bar/init.sls" file should start with something like this:
-"""
-{%- set default_sources = {'module' : ['foo', 'bar'], 'defaults' : True, 'pillar' : True, 'grains' : ['os_family', 'os', 'osfinger']} %}
-{%- from "extra_formulas_common/load_config.jinja" import config as bar with context %}
+{# All your installation, config, start states go here #}
 
-{%- if bar.use is defined %}
-...
-"""
+{%- else -%}
+
+{# All your stop, uninstall, cleanup states go here #}
+
+{%- endif %}
+
+formula-spam-is-disabled:
+  test.show_notification:
+    - text: |
+        The spam formula is disabled for this host
+        You could enable it by setting the "use" flag in the pillar
+
+{%- endif %}
+```
