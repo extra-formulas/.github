@@ -114,7 +114,7 @@ Remember to replace `spam` with the actual name of your software. Populate your 
 
 ### Supporting more
 
-To populate `defaults.yaml` file you'd look for the upstream developer's opinion. You could also add some "custom" defaults in here, like the `package_name` or `service_name` values. The upstream developer shouldn't have those around, since the first value is about the OS' packaging system and the second is about the OS' init system, not directly related to the software in question, BUT it's safe to assume that those values will match the name that the developer set for the software (and then just cover the divergences). For example, the Bind DNS server has different names in different distros over time, some call it `bind`, some `named`, some others use even different names. You could start by calling it `bind` and then just specify "the other names" where applicable.
+To populate the `defaults.yaml` file you'd look at the upstream developer's opinion. You could also add some "custom" defaults in here, like the `package_name` or `service_name` values. The upstream developer shouldn't have those around, since the first value is about the OS' packaging system and the second is about the OS' init system, not directly related to the software in question, BUT it's safe to assume that those values will match the name that the developer set for the software (and then just cover the divergences). For example, the Bind DNS server has different names in different distros over time, some call it `bind`, some `named`, some others use even different names. You could start by calling it `bind` and then just specify "the other names" where applicable.
 
 Then you'd try your root distro's opinions on the values and set them on the `os_family.yaml` file. Meaning that you'd look for `RedHat`'s values instead of using the ones from `Rocky Linux`, `Debian`'s instead of the ones from `Ubuntu`, etc.
 
@@ -125,3 +125,9 @@ Some distros introduce breaking changes over time. The best way to tackle those 
 At this point you could remove any redundant values from your original entry in the `osfinger.yaml` file. Hopefully, it everything will be covered by more general files and the whole entry could be deleted.
 
 Remember to update your `default_sources` variable at every step of the way for the changes to apply.
+
+### What about building source tarballs?
+
+Upstream SaltStack encourages the build and installation of software directly from source tarballs. It's a REALLY BAD IDEA to do so, you're basically bleeding the package management functionality into SaltStack. Package management is a big and complicated problem on its own, and each distro tackles it in their own way, by "simplifying" it with salt you're not doing anyone any favors. You could say that what separates a distro from the next is the way each tackles package management.
+
+We'd say that "the sane approach" to achieving the same result is by running a private repo compatible with your OS. You'd publish there native packages of pre-built pieces of software taking into consideration all the potential issues: distinguish different distro versions, take into account name collisions, keep track of package versions, etc. By doing this you can leverage your OS' packaging system including the install and removal functionalities that you'd then leverage in your formula. Even if you feel the temptation because your software is self-contained (it lives completely inside a directory in `/opt/`) you'd still find a lot of issues with "installed version detection" which is a crucial functionality to handle upgrades. It's always better to just use the native packaging and the functionalities there.
