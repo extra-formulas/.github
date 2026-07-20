@@ -35,6 +35,8 @@ To achieve this, your custom formula should have a basic structure like:
 
 {%- endif %}
 
+{%- else -%}
+
 formula-spam-is-disabled:
   test.show_notification:
     - text: |
