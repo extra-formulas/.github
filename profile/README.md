@@ -110,7 +110,7 @@ formula-spam-is-disabled:
 {%- endif %}
 ```
 
-Remember to replace `spam` with the actual name of your software. Populate your `defaults/osfinger.yaml` file with values for `package_name`, `config_file_path`, and `service_name`. Keep in mind that the root of the file is a dict/mapping with the osfinger values as keys. You'd have to get your value from SaltStack on your host. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc. Based on the content of the config file, you might want to keep adding some sane default values to `defaults/osfinger.yaml` (anything host specific would have to be pulled from the pillar).
+Remember to replace `spam` with the actual name of your software. Populate your `defaults/osfinger.yaml` file with values for `package_name`, `config_file_path`, and `service_name`. Keep in mind that the root of the file is a dict/mapping with the osfinger values as keys. To get your key, use SaltStack's `grains.get osfinger` on your host. The content of the `files/config.jinja` will depend on the software itself, the format expected, etc. Based on the content of the config file, you might want to keep adding some sane default values to `defaults/osfinger.yaml` (anything host specific would have to be pulled from the pillar).
 
 ### Supporting more
 
@@ -118,9 +118,9 @@ To populate `defaults.yaml` file you'd look for the upstream developer's opinion
 
 Then you'd try your root distro's opinions on the values and set them on the `os_family.yaml` file. Meaning that you'd look for `RedHat`'s values instead of using the ones from `Rocky Linux`, `Debian`'s instead of the ones from `Ubuntu`, etc.
 
-At that point you could then see which values in your os diverge from the family and set those in the `os.yaml` file.
+At that point you could then see which values in your OS diverge from the family and set those in the `os.yaml` file.
 
-Some distros introduce breaking changes over time. The best way to tackle those is to assume the "new" stuff as the "default" stuff since it's safe to assume that future versions will keep this "new" way, and that's why it should go into the `os.yaml` file. This will of course break all the "old" versions, which would have to be covered with the `osfinger.yaml` file.
+Some distros introduce breaking changes over time. The best way to tackle those is to assume the "new" stuff as the "default" stuff since it's safe to assume that future versions will keep this "new" way, and that's why it should go into the `os.yaml` file. This will of course break all the "old" versions, which would have to be covered in the `osfinger.yaml` file.
 
 At this point you could remove any redundant values from your original entry in the `osfinger.yaml` file. Hopefully, it everything will be covered by more general files and the whole entry could be deleted.
 
