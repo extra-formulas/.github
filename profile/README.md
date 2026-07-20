@@ -84,6 +84,8 @@ spam_package_removal:
 
 {%- endif %}
 
+{%- else -%}
+
 formula-spam-is-disabled:
   test.show_notification:
     - text: |
